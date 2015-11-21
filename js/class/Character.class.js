@@ -21,11 +21,12 @@
 
 	// Object
 	
-	var Character = function (config)
+	var Character = function (config, settings)
 	{
 
 		// Config
 		this.config = config;
+		this.settings = settings;
 
 		// Audio
 		this.audio = {};
@@ -51,9 +52,9 @@
 		this.audio.panner.connect(audio.context.destination);
 
 		// Panner
-		this.audio.panner.distanceModel = this.config.settings.panner.distanceModel;
-		this.audio.panner.rolloffFactor = this.config.settings.panner.rolloffFactor;
-		this.audio.panner.refDistance = this.config.settings.panner.refDistance;
+		this.audio.panner.distanceModel = this.settings.panner.distanceModel;
+		this.audio.panner.rolloffFactor = this.settings.panner.rolloffFactor;
+		this.audio.panner.refDistance = this.settings.panner.refDistance;
 
 		// No volume
 		this.audio.volume.gain.value = 0;
@@ -111,17 +112,59 @@
 
 	// Fade
 	
-	Character.prototype.fadeIn = function (duration)
+	Character.prototype.fadeIn = function (duration, callback, started)
 	{
 
-		this.setVolume(1);
+		// Reference
+		var that = this;
+
+		// Callback
+		if(!callback){ callback = null; }
+
+		// Time
+		var time = new Date().getTime();
+		if(!duration){ duration = 1000; }
+		if(!started){ started = time; }
+
+		// Volume
+		if(time - started >= duration)
+		{
+			this.setVolume(1);
+			if(callback){ callback(); } 
+		}
+		else
+		{
+			this.setVolume(((time-started)/duration)*this.config.sound.volume);
+			window.requestAnimationFrame(function (){ that.fadeIn(duration, callback, started); });
+		}
 
 	};
 
-	Character.prototype.fadeOut = function (duration)
+	Character.prototype.fadeOut = function (duration, callback, started)
 	{
 
-		this.setVolume(0);
+		// Reference
+		var that = this;
+
+		// Callback
+		if(!callback){ callback = null; }
+
+		// Time
+		var time = new Date().getTime();
+		if(!duration){ duration = 1000; }
+		if(!started){ started = time; }
+
+		// Volume
+		if(time - started >= duration)
+		{
+			this.setVolume(0);
+			if(callback){ callback(); } 
+		}
+		else
+		{
+			this.setVolume((1-((time-started)/duration))*this.config.sound.volue);
+			window.requestAnimationFrame(function (){ that.fadeOut(duration, callback, started); });
+		}
 
 	};
 

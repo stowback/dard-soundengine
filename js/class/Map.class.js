@@ -71,7 +71,7 @@
 		this.audio.volume.connect(this.audio.context.destination);
 
 		// Disable sound
-		// this.audio.volume.gain.value = 0;
+		this.audio.volume.gain.value = 0;
 
 		// Data
 		this.loadData(success, error);
@@ -181,7 +181,7 @@
 
 			// Volume
 			object.volume.gain.value = this.config.map.objects.volume * tmp.volume;
-			object.volume.gain.value = 0;
+			// object.volume.gain.value = 0;
 
 			// Bufferize
 			this.loadBuffer(this.config.paths.sounds + this.sources[this.objects[y][x].sound],
@@ -217,16 +217,15 @@
 		var that = this;
 
 		// Daredevil
-		this.daredevil = new Character(this.config.characters);
+		this.daredevil = new Character(this.config.characters.daredevil, this.config.characters.settings);
 		this.daredevil.init(this.config.paths.sounds + this.config.characters.daredevil.sound.file, this.audio,
 			function ()
 			{
 				// Vilain
-				that.vilain = new Character(that.config.characters);
+				that.vilain = new Character(that.config.characters.kidnapper, this.config.characters.settings);
 				that.vilain.init(that.config.paths.sounds + that.config.characters.kidnapper.sound.file, that.audio,
 					function ()
 					{	
-						that.vilain.audio.panner.setPosition(0, 0, 0);
 						// Callback
 						success();
 					}
@@ -280,7 +279,6 @@
 		}
 		else
 		{
-			console.log((time-started)/duration);
 			this.setVolume((time-started)/duration);
 			window.requestAnimationFrame(function (){ that.fadeIn(duration, callback, started); });
 		}
@@ -306,9 +304,8 @@
 		}
 		else
 		{
-			console.log(1 - ((time-started)/duration));
 			this.setVolume(1 - ((time-started)/duration));
-			window.requestAnimationFrame(function (){ that.fadeIn(duration, callback, started); });
+			window.requestAnimationFrame(function (){ that.fadeOut(duration, callback, started); });
 		}
 
 	};
