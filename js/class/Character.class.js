@@ -21,8 +21,11 @@
 
 	// Object
 	
-	var Character = function ()
+	var Character = function (config)
 	{
+
+		// Config
+		this.config = config;
 
 		// Audio
 		this.audio = {};
@@ -45,8 +48,14 @@
 		this.audio.volume = audio.context.createGain();
 		this.audio.source.connect(this.audio.volume);
 		this.audio.volume.connect(this.audio.panner);
-		this.audio.panner.connect(audio.mixer);
+		this.audio.panner.connect(audio.context.destination);
 
+		// Panner
+		this.audio.panner.distanceModel = this.config.settings.panner.distanceModel;
+		this.audio.panner.rolloffFactor = this.config.settings.panner.rolloffFactor;
+		this.audio.panner.refDistance = this.config.settings.panner.refDistance;
+
+		// No volume
 		this.audio.volume.gain.value = 0;
 
 		// Load

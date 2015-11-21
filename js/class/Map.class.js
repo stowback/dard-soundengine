@@ -71,7 +71,7 @@
 		this.audio.volume.connect(this.audio.context.destination);
 
 		// Disable sound
-		this.audio.volume.gain.value = 0;
+		// this.audio.volume.gain.value = 0;
 
 		// Data
 		this.loadData(success, error);
@@ -181,7 +181,7 @@
 
 			// Volume
 			object.volume.gain.value = this.config.map.objects.volume * tmp.volume;
-			// object.volume.gain.value = 0;
+			object.volume.gain.value = 0;
 
 			// Bufferize
 			this.loadBuffer(this.config.paths.sounds + this.sources[this.objects[y][x].sound],
@@ -217,12 +217,12 @@
 		var that = this;
 
 		// Daredevil
-		this.daredevil = new Character();
+		this.daredevil = new Character(this.config.characters);
 		this.daredevil.init(this.config.paths.sounds + this.config.characters.daredevil.sound.file, this.audio,
 			function ()
 			{
 				// Vilain
-				that.vilain = new Character();
+				that.vilain = new Character(that.config.characters);
 				that.vilain.init(that.config.paths.sounds + that.config.characters.kidnapper.sound.file, that.audio,
 					function ()
 					{	
@@ -261,17 +261,55 @@
 	
 	// Fade
 	
-	Map.prototype.fadeIn = function (duration)
+	Map.prototype.fadeIn = function (duration, callback, started)
 	{
 
-		this.setVolume(1);
+		// Reference
+		var that = this;
+
+		// Time
+		var time = new Date().getTime();
+		if(!duration){ duration = 1000; }
+		if(!started){ started = time; }
+
+		// Volume
+		if(time - started >= duration)
+		{
+			this.setVolume(1);
+			if(callback){ callback(); } 
+		}
+		else
+		{
+			console.log((time-started)/duration);
+			this.setVolume((time-started)/duration);
+			window.requestAnimationFrame(function (){ that.fadeIn(duration, callback, started); });
+		}
 
 	};
 
-	Map.prototype.fadeOut = function (duration)
+	Map.prototype.fadeOut = function (duration, callback, started)
 	{
 
-		this.setVolume(0);
+		// Reference
+		var that = this;
+
+		// Time
+		var time = new Date().getTime();
+		if(!duration){ duration = 1000; }
+		if(!started){ started = time; }
+
+		// Volume
+		if(time - started >= duration)
+		{
+			this.setVolume(0);
+			if(callback){ callback(); } 
+		}
+		else
+		{
+			console.log(1 - ((time-started)/duration));
+			this.setVolume(1 - ((time-started)/duration));
+			window.requestAnimationFrame(function (){ that.fadeIn(duration, callback, started); });
+		}
 
 	};
 

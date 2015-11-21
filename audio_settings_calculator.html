@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<!-- TITLE -->
+	<title>Expérience</title>
+
+	<!-- STYLE -->
+	<style type="text/css">
+		/* body{ background-color: black; } */
+		table{}
+		th, td{ border: 1px solid black; min-width: 100px; padding: 10px; }
+	</style>
+
+</head>
+
+<body>
+
+
+
+</body>
+
+</html>
+
+
+<script type="text/javascript" src="js/lib/jquery.js"></script>
+<script>
+
+	var tests = [
+		{ model: "exp", factor: 1, distance: 50, withDistance: false, },
+		// { model: "inv", factor: 1, distance: 50 },
+		{ model: "exp", factor: 3, distance: 120, withDistance: true },
+		// { model: "inv", factor: 2, distance: 100 },
+	];
+
+	var distances = [50, 100, 150, 200, 250];
+
+	var results = new Array(tests.length);
+
+	function getDistance (x){
+		return Math.sqrt(Math.pow((x - 0), 2) + Math.pow((100 - 0), 2));
+	}
+
+	for(i in tests)
+	{
+
+		var data = tests[i];
+		results[i] = new Array(distances.length);
+
+		if(data.model == "exp")
+		{
+			console.log('coucou');
+			for(j in distances){
+				var distance = distances[j];
+				if(data.withDistance){ distance = getDistance(distances[j]); }
+				var result = Math.pow((distance/data.distance), -data.factor);
+				results[i][j] = result;
+			}
+		}
+
+		if(data.model == "inv")
+		{
+			console.log('hello');
+			for(j in distances){
+				var distance = distances[j];
+				if(data.withDistance){ distance = getDistance(distances[j]); }
+				var result = data.distance / (data.distance + data.factor * (distance - data.distance));
+				results[i][j] = result;
+			}
+		}
+
+	}
+
+	var table = $('<table></table>');
+	var head = $('<tr></tr>');
+	for(distance in distances){ head.append($('<th>' + distances[distance] + '</th>')); }
+	table.append(head);
+	for(line in results)
+	{
+		var elem_line = $('<tr></tr>');
+		for(result in results[line])
+		{
+			var elem_cell = $('<td>' + results[line][result] + '</td>');
+			elem_line.append(elem_cell);
+		}
+		table.append(elem_line);
+	}
+	$('body').append(table);
+
+</script>

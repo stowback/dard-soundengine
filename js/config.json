@@ -17,13 +17,22 @@
 		"daredevil": {
 			"sound": {
 				"name": "daredevil_running",
-				"file": "daredevil_course.mp3"
+				"file": "daredevil_course.mp3",
+				"volume": 2
 			}
 		},
 		"kidnapper": {
 			"sound": {
 				"name": "kidnapper_running",
-				"file": "bebe_pleure.mp3"
+				"file": "bebe_pleure.mp3",
+				"volume": 1
+			}
+		},
+		"settings": {
+			"panner": {
+				"distanceModel": "exponential",
+				"rolloffFactor": 4,
+				"refDistance": 120
 			}
 		}
 	},
