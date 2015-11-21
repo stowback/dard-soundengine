@@ -51,6 +51,12 @@
 						e.preventDefault();
 						elem.remove();
 						game = new Game(map);
+						game.init(function ()
+						{
+							game.map.fadeIn();
+							game.map.daredevil.fadeIn();
+							game.map.vilain.fadeIn();
+						});
 					});
 					$('body').append(elem);
 				},

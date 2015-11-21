@@ -225,10 +225,8 @@
 				that.vilain = new Character();
 				that.vilain.init(that.config.paths.sounds + that.config.characters.kidnapper.sound.file, that.audio,
 					function ()
-					{
-						that.vilain.audio.panner.setPosition(-150, 10, 0);
-						that.vilain.audio.volume.gain.value = 2;
-						
+					{	
+						that.vilain.audio.panner.setPosition(0, 0, 0);
 						// Callback
 						success();
 					}
@@ -251,15 +249,31 @@
 
 
 
-
-	// Fade
+	// Volume
 	
-	Map.prototype.fadeIn = function ()
+	Map.prototype.setVolume = function (volume)
 	{
 
-		this.audio.volume.gain = 1;
+		this.audio.volume.gain.value = volume;
 
-	}
+	};
+
+	
+	// Fade
+	
+	Map.prototype.fadeIn = function (duration)
+	{
+
+		this.setVolume(1);
+
+	};
+
+	Map.prototype.fadeOut = function (duration)
+	{
+
+		this.setVolume(0);
+
+	};
 
 
 	

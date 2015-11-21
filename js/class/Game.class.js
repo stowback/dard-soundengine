@@ -47,6 +47,9 @@
 
 		// Create ride
 		// ...
+		
+		// Callback
+		callback();
 
 	};
 

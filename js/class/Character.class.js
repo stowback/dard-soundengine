@@ -90,5 +90,42 @@
 
 
 
-	//  
+	//  Volume
+	
+	Character.prototype.setVolume = function (volume)
+	{
+
+		this.audio.volume.gain.value = volume;
+
+	};
+
+
+	// Fade
+	
+	Character.prototype.fadeIn = function (duration)
+	{
+
+		this.setVolume(1);
+
+	};
+
+	Character.prototype.fadeOut = function (duration)
+	{
+
+		this.setVolume(0);
+
+	};
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
