@@ -1,0 +1,34 @@
+{
+	"map": {
+		"model": "base",
+		"points": {
+			"width": 50,
+			"height": 50
+		},
+		"districts": {
+			"fadein": 100,
+			"volume": 1
+		},
+		"objects": {
+			"volume": 0.7
+		}
+	},
+	"characters": {
+		"daredevil": {
+			"sound": {
+				"name": "daredevil_running",
+				"file": "daredevil_course.mp3"
+			}
+		},
+		"kidnapper": {
+			"sound": {
+				"name": "kidnapper_running",
+				"file": "bebe_pleure.mp3"
+			}
+		}
+	},
+	"paths": {
+		"maps": "assets/maps/",
+		"sounds": "assets/sounds/"
+	}
+}
