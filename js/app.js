@@ -42,10 +42,25 @@
 
 			// Create map
 			map = new Map(config);
+
+			// Init
 			map.init(
 				function ()
 				{
+					// Create game
 					game = new Game(map);
+
+					// Moves
+					$(window).on('keydown', function (e)
+					{
+						switch(e.keyCode)
+						{
+							case 37: game.setMoveDirection("left"); break;
+							case 39: game.setMoveDirection("right"); break;
+						}
+					});
+
+					// Init
 					game.init(function ()
 					{
 						game.start();

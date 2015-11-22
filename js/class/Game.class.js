@@ -38,10 +38,17 @@
 		// Shorcuts
 		this.kidnapperAdvance = this.map.config.characters.kidnapper.advance;
 
+		// Navigation
+		this.move = {
+			moving: false,
+			direction: null,
+			started: null,
+		};
+
 		// Time
 		this.time = {
-			started: null,
 			current: null,
+			started: null,
 		};
 
 		// Ride
@@ -104,9 +111,9 @@
 
 			// Time
 			self.time.started = new Date().getTime();
+			self.move.started = self.time.started;
 
 			// Update loop
-			console.log(self.map);
 			self.update();
 
 		});		
@@ -126,15 +133,48 @@
 		this.time.current = new Date().getTime();
 		var elapsed = this.time.current - this.time.started;
 		
-		// 
+		// Length
 		var distance = (elapsed/1000)*this.map.config.characters.speed;
-		this.map.daredevil.move(this.map.daredevil.position.x, distance);
-		this.map.vilain.move(this.map.daredevil.position.x, distance + this.kidnapperAdvance);
-		this.map.audio.context.listener.setPosition(this.map.daredevil.position.x, distance, 0);
-		console.log(parseInt(elapsed/1000));
+
+		// Dardevil
+		var move_distance = 0;
+		if(this.move.moving)
+		{
+			if(this.time.current > this.move.started + this.map.config.characters.daredevil.moves.duration)
+			{
+				this.move.moving = false;
+				this.move.direction = null;
+				this.move.started = null;
+			}
+			else
+			{
+				move_distance = ((this.time.current - this.move.started)/this.map.config.characters.daredevil.moves.duration)*this.map.config.characters.daredevil.moves.distance;
+				if(this.move.direction == "left"){ move_distance = -move_distance; }
+				console.log(move_distance);
+			}
+		}
+
+		this.map.daredevil.move(this.map.daredevil.position.x + move_distance, distance);
+		this.map.audio.context.listener.setPosition(this.map.daredevil.position.x + move_distance, distance, 0);
+		this.map.vilain.move(this.map.vilain.position.x, distance + this.kidnapperAdvance);
 
 		// Loop
 		window.requestAnimationFrame(function (){ self.update(); });
+
+	};
+
+
+	// Navigation
+	
+	Game.prototype.setMoveDirection = function (move)
+	{
+
+		if(!this.move.moving)
+		{
+			this.move.moving = true;
+			this.move.direction = move;
+			this.move.started = new Date().getTime();
+		}
 
 	};
 	

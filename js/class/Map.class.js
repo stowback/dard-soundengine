@@ -182,7 +182,7 @@
 			object.panner.refDistance = 120;
 
 			// Position
-			object.panner.setPosition(tmp.position.x*this.config.map.points.width, tmp.position.y*this.config.map.points.height, tmp.position.z);
+			object.panner.setPosition(tmp.position.x*this.config.map.points.width, tmp.position.y*this.config.map.points.height, 1);
 
 			// Volume
 			// object.volume.gain.value = this.config.map.objects.volume * tmp.volume;

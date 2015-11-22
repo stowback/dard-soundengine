@@ -18,7 +18,11 @@
 			"sound": {
 				"name": "daredevil_running",
 				"file": "daredevil_course.mp3",
-				"volume": 1
+				"volume": 0.7
+			},
+			"moves": {
+				"duration": 200,
+				"distance": 10
 			}
 		},
 		"kidnapper": {
@@ -33,7 +37,7 @@
 			"panner": {
 				"distanceModel": "exponential",
 				"rolloffFactor": 4,
-				"refDistance": 120
+				"refDistance": 500
 			}
 		},
 		"speed": 50

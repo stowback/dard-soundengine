@@ -182,7 +182,7 @@
 		this.position.y = y;
 
 		// Audio
-		this.audio.panner.setPosition(x, y, 0);
+		this.audio.panner.setPosition(x, y, 1);
 
 	};
 
