@@ -176,11 +176,17 @@
 			object.volume.connect(object.panner);
 			object.panner.connect(this.audio.mixer);
 
+			// Settings
+			object.panner.distanceModel = "exponential";
+			object.panner.rolloffFactor = 4;
+			object.panner.refDistance = 120;
+
 			// Position
-			object.panner.setPosition(tmp.position.x, tmp.position.y, tmp.position.z);
+			object.panner.setPosition(tmp.position.x*this.config.map.points.width, tmp.position.y*this.config.map.points.height, tmp.position.z);
 
 			// Volume
-			object.volume.gain.value = this.config.map.objects.volume * tmp.volume;
+			// object.volume.gain.value = this.config.map.objects.volume * tmp.volume;
+			object.volume.gain.value = this.config.map.objects.volume;
 			// object.volume.gain.value = 0;
 
 			// Bufferize

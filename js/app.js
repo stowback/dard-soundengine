@@ -45,24 +45,21 @@
 			map.init(
 				function ()
 				{
-					var elem = $('<button>Commencer la partie</button>');
-					elem.on('click', function (e)
+					game = new Game(map);
+					game.init(function ()
 					{
-						e.preventDefault();
-						elem.remove();
-						game = new Game(map);
-						game.init(function ()
-						{
-							game.map.fadeIn(3000, function ()
-							{
-								game.map.daredevil.fadeIn(1200);
-								game.map.vilain.fadeIn(1000);
-							});
-						});
+						game.start();
 					});
-					$('body').append(elem);
 				},
 				function (error){ console.log(error); });
+
+			var elem = $('<button>Eteindre</button>');
+			elem.on('click', function (){ 
+				map.fadeOut(0);
+				map.daredevil.fadeOut(0);
+				map.vilain.fadeOut(0); 
+			});
+			$('body').append(elem);
 		});	
 
 	});

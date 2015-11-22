@@ -18,7 +18,7 @@
 			"sound": {
 				"name": "daredevil_running",
 				"file": "daredevil_course.mp3",
-				"volume": 2
+				"volume": 1
 			}
 		},
 		"kidnapper": {
@@ -26,7 +26,8 @@
 				"name": "kidnapper_running",
 				"file": "bebe_pleure.mp3",
 				"volume": 1
-			}
+			},
+			"advance": 100
 		},
 		"settings": {
 			"panner": {
@@ -34,7 +35,8 @@
 				"rolloffFactor": 4,
 				"refDistance": 120
 			}
-		}
+		},
+		"speed": 50
 	},
 	"paths": {
 		"maps": "assets/maps/",

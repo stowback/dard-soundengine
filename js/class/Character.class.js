@@ -31,6 +31,9 @@
 		// Audio
 		this.audio = {};
 
+		// Position
+		this.position = { x: 0, y: 0};
+
 	};
 
 
@@ -162,9 +165,24 @@
 		}
 		else
 		{
-			this.setVolume((1-((time-started)/duration))*this.config.sound.volue);
+			this.setVolume((1-((time-started)/duration))*this.config.sound.volume);
 			window.requestAnimationFrame(function (){ that.fadeOut(duration, callback, started); });
 		}
+
+	};
+
+
+	// Position
+	
+	Character.prototype.move = function (x, y)
+	{
+
+		// Properties
+		this.position.x = x;
+		this.position.y = y;
+
+		// Audio
+		this.audio.panner.setPosition(x, y, 0);
 
 	};
 
