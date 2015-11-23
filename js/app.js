@@ -64,7 +64,7 @@
 					// Init
 					game.init(function ()
 					{
-						// game.start();
+						game.start();
 					});
 				},
 				function (error){ console.log(error); });

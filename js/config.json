@@ -26,7 +26,7 @@
 			},
 			"moves": {
 				"duration": 200,
-				"distance": 10
+				"distance": 20
 			}
 		},
 		"kidnapper": {
@@ -34,6 +34,10 @@
 				"name": "kidnapper_running",
 				"file": "bebe_pleure.mp3",
 				"volume": 1
+			},
+			"moves": {
+				"duration": 1000,
+				"distance": 20
 			},
 			"advance": 100
 		},

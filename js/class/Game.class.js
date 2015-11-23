@@ -39,10 +39,18 @@
 		this.kidnapperAdvance = this.map.config.characters.kidnapper.advance;
 
 		// Navigation
+		
 		this.move = {
-			moving: false,
-			direction: null,
-			started: null,
+			daredevil: {
+				moving: false,
+				direction: null,
+				started: null,
+			},
+			vilain: {
+				started: null,
+				previous: null,
+				next: null,
+			}
 		};
 
 		// Ride
@@ -69,9 +77,9 @@
 		this.ride = this.createRide();
 		
 		// Positions
-		this.map.daredevil.move(parseInt(this.map.dimensions.width/2), 0);
-		this.map.vilain.move(parseInt(this.map.dimensions.width/2), this.map.config.characters.kidnapper.advance);
-		this.map.audio.context.listener.setPosition(this.map.dimensions.width/2, 0, 0);
+		this.map.daredevil.move(parseInt(this.map.dimensions.width/2)*this.map.config.map.points.width, 0);
+		this.map.vilain.move(parseInt(this.map.dimensions.width/2)*this.map.config.map.points.width, this.map.config.characters.kidnapper.advance);
+		this.map.audio.context.listener.setPosition(parseInt(this.map.dimensions.width/2)*this.map.config.map.points.width, 0, 0);
 
 		
 		// Callback
@@ -166,7 +174,15 @@
 
 			// Time
 			self.time.started = new Date().getTime();
-			self.move.started = self.time.started;
+
+			// Daredevil moves
+			self.move.daredevil.started = self.time.started;
+
+			// Vilain moves
+			self.move.vilain.started = self.time.started;
+			self.move.vilain.previous = self.ride[0];
+			self.move.vilain.next = self.ride[1];
+			self.move.vilain.distance = self.move.vilain.next - self.move.vilain.previous;
 
 			// Update loop
 			self.update();
@@ -190,32 +206,45 @@
 		
 		// Length
 		var distance = (elapsed/1000)*this.map.config.characters.speed;
+		this.properties.cell = parseInt(distance/this.map.config.map.points.height);
 
 		// Dardevil
 		var move_distance = 0;
-		if(this.move.moving)
+		if(this.move.daredevil.moving)
 		{
-			if(this.time.current > this.move.started + this.map.config.characters.daredevil.moves.duration)
+			if(this.time.current > this.move.daredevil.started + this.map.config.characters.daredevil.moves.duration)
 			{
-				this.move.moving = false;
-				this.move.direction = null;
-				this.move.started = null;
+				this.move.daredevil.moving = false;
+				this.move.daredevil.direction = null;
+				this.move.daredevil.started = null;
 			}
 			else
 			{
-				move_distance = ((this.time.current - this.move.started)/this.map.config.characters.daredevil.moves.duration)*this.map.config.characters.daredevil.moves.distance;
-				if(this.move.direction == "left"){ move_distance = -move_distance; }
-				// console.log(move_distance);
+				move_distance = ((this.time.current - this.move.daredevil.started)/this.map.config.characters.daredevil.moves.duration)*this.map.config.characters.daredevil.moves.distance;
+				if(this.move.daredevil.direction == "left"){ move_distance = -move_distance; }
 			}
+		}
+
+		// Vilain
+		var move_vilain = 0;
+		if(this.time.current > this.move.vilain.started + this.map.config.characters.kidnapper.moves.duration)
+		{
+			this.move.vilain.started = this.time.current;
+			this.move.vilain.previous = this.move.vilain.next;
+			this.move.vilain.next = this.ride[this.properties.cell];
+			this.move.vilain.distance = this.move.vilain.next - this.move.vilain.previous;
+		}
+		else
+		{
+			move_vilain = ((this.time.current - this.move.vilain.started)/this.map.config.characters.kidnapper.moves.duration)*this.map.config.characters.kidnapper.moves.distance*this.move.vilain.distance;	
 		}
 
 		// Positions
 		this.map.daredevil.move(this.map.daredevil.position.x + move_distance, distance);
 		this.map.audio.context.listener.setPosition(this.map.daredevil.position.x + move_distance, distance, 0);
-		this.map.vilain.move(this.map.vilain.position.x, distance + this.kidnapperAdvance);
+		this.map.vilain.move(this.map.vilain.position.x + move_vilain, distance + this.kidnapperAdvance);
 
 		// District
-		// console.log(this.map.sounds.districts[0].volume.gain.value);
 		if(this.properties.district < this.map.sounds.districts.length-1)
 		{
 			if(distance/this.map.config.map.points.height > this.map.sounds.districts[this.properties.district+1].distance)
@@ -229,7 +258,6 @@
 				this.properties.district++;
 			}
 		}
-		console.log(parseInt(elapsed/1000));
 
 		// Loop
 		window.requestAnimationFrame(function (){ self.update(); });
@@ -242,11 +270,11 @@
 	Game.prototype.setMoveDirection = function (move)
 	{
 
-		if(!this.move.moving)
+		if(!this.move.daredevil.moving)
 		{
-			this.move.moving = true;
-			this.move.direction = move;
-			this.move.started = new Date().getTime();
+			this.move.daredevil.moving = true;
+			this.move.daredevil.direction = move;
+			this.move.daredevil.started = new Date().getTime();
 		}
 
 	};
