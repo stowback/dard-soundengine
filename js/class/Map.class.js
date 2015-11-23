@@ -119,33 +119,24 @@
 		if(this.districts[i])
 		{
 			// Audio object
-			var district = {};
-			district.source = this.audio.context.createBufferSource();
-			district.source.loop = true;
-			district.volume = this.audio.context.createGain();
-			district.source.connect(district.volume);
-			district.volume.connect(this.audio.volume);
+			var district = new District(i, this.districts[i], this.audio, this.config);
+			district.init(this.config.paths.sounds + this.sources[this.districts[i].sound],
+				function ()
+				{
+					// Store
+					that.districts[i].audio = district;
+					that.sounds.districts[that.sounds.districts.length] = district;
+					//that.sounds.districts.push(district);
 
-			// No sound
-			district.volume.gain.value = 0;
+					// First
+					if(i == 0){
+						district.setVolume(district.properties.volume);
+					}
 
-			// Bufferize
-			this.loadBuffer(this.config.paths.sounds + this.sources[this.districts[i].sound],
-			function (buffer)
-			{
-				// Update audio
-				district.buffer = buffer;
-				district.source.buffer = district.buffer;
-				district.source.start(0);
-
-				// Store
-				that.districts[i].audio = district;
-				that.sounds.districts.push(district);
-
-				// Next
-				that.createDistricts(i+1, success, error);
-			},
-			error);
+					// Next
+					that.createDistricts(i+1, success, error);
+				}
+			);
 		}
 		else{ this.createDistricts(i+1, success, error); }
 

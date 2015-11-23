@@ -45,6 +45,9 @@
 			started: null,
 		};
 
+		// Ride
+		this.ride = null;
+
 		// Time
 		this.time = {
 			current: null,
@@ -63,7 +66,7 @@
 	{
 
 		// Create ride
-		// ...
+		this.ride = this.createRide();
 		
 		// Positions
 		this.map.daredevil.move(parseInt(this.map.dimensions.width/2), 0);
@@ -77,7 +80,59 @@
 	};
 
 
+	// Ride
+	
+	Game.prototype.createRide = function ()
+	{
 
+		// Path
+		var path = new Array(this.map.dimensions.length);
+
+		// Start
+		path[0] = parseInt(this.map.dimensions.width/2);
+
+		// Generate
+		for(var i=0; i<this.map.dimensions.length; i++)
+		{
+			if(path[i] == null)
+			{
+				// Previous
+				var previous = path[i-1];
+
+				// Trajectory
+				var models = ["right", "ahead", "left"];
+				if(previous<=0){ models = ["ahead", "left"]; }
+				if(previous>=this.map.dimensions.width-1){ models = ["right", "ahead"]; }
+				var trajectory = models[Math.floor(Math.random()*(models.length))];
+
+				// Length
+				var trajectory_length = Math.floor(Math.random()*this.map.config.map.ride.trajectory_max_length) + this.map.config.map.ride.trajectory_min_length;
+
+				// Create path
+				for(var j=0; j<trajectory_length; j++)
+				{
+					// Previous
+					var trajectory_previous = path[(i+j)-1];
+
+					// Add path
+					if(trajectory == "right"){
+						if(trajectory_previous-1 < 0){ path[i+j] = trajectory_previous; break; }
+						else{ path[i+j] = trajectory_previous-1; }
+					}
+					if(trajectory == "left"){
+						if(trajectory_previous+1 >= this.map.dimensions.width){ path[i+j] = trajectory_previous; break; }
+						else{ path[i+j] = trajectory_previous+1; }
+					}
+					if(trajectory == "ahead"){ path[i+j] = trajectory_previous; }
+				}
+
+			}
+		}
+
+		// Return
+		return path;
+
+	};
 
 
 
@@ -150,13 +205,31 @@
 			{
 				move_distance = ((this.time.current - this.move.started)/this.map.config.characters.daredevil.moves.duration)*this.map.config.characters.daredevil.moves.distance;
 				if(this.move.direction == "left"){ move_distance = -move_distance; }
-				console.log(move_distance);
+				// console.log(move_distance);
 			}
 		}
 
+		// Positions
 		this.map.daredevil.move(this.map.daredevil.position.x + move_distance, distance);
 		this.map.audio.context.listener.setPosition(this.map.daredevil.position.x + move_distance, distance, 0);
 		this.map.vilain.move(this.map.vilain.position.x, distance + this.kidnapperAdvance);
+
+		// District
+		// console.log(this.map.sounds.districts[0].volume.gain.value);
+		if(this.properties.district < this.map.sounds.districts.length-1)
+		{
+			if(distance/this.map.config.map.points.height > this.map.sounds.districts[this.properties.district+1].distance)
+			{
+				console.log('ca change');
+				// Fades
+				this.map.sounds.districts[this.properties.district].fadeOut(10000);
+				this.map.sounds.districts[this.properties.district+1].fadeIn(10000);
+
+				// Store
+				this.properties.district++;
+			}
+		}
+		console.log(parseInt(elapsed/1000));
 
 		// Loop
 		window.requestAnimationFrame(function (){ self.update(); });

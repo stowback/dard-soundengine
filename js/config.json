@@ -11,6 +11,10 @@
 		},
 		"objects": {
 			"volume": 0.7
+		},
+		"ride": {
+			"trajectory_max_length": 5,
+			"trajectory_min_length": 1
 		}
 	},
 	"characters": {

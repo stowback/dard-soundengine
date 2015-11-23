@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	
+		body{ padding: 100px; }
+		td{ width: 20px; height: 20px; border: 1px solid black; }
+		tr.path{ background-color: red; }
+		td.path{ background-color: red; }
+
+	</style>
+</head>
+<body>
+	
+</body>
+</html>
+
+<script type="text/javascript" src="js/lib/jquery.js"></script>
+<script>
+
+
+
+	// Launch
+	
+	$(function ()
+	{
+
+
+		var width = 20;
+		var length = 180;
+
+
+		// Draw
+		
+		var table = $('<table></table>');
+
+		for(var i=0; i<length/2; i++)
+		{
+			var row = $('<tr><tr>');
+			for(var j=0; j<width; j++)
+			{
+				var cell = $('<td></td>');
+				row.append(cell);
+			}
+			table.append(row);
+		}
+
+		$('body').append(table);
+
+
+		// Path
+		
+		var path = generatePath(width, length);
+
+
+		// Print
+		
+		for(var i=0; i<path.length; i++)
+		{
+			if(path[i] != null)
+			{
+				var elem = $('tr:nth-child(' + (i+1) + ') td:nth-child(' + (path[i]+1) + ')');
+				elem.addClass('path');
+			}
+		}
+
+
+	});
+
+
+
+	// Config
+	
+	var config = {
+		max_lenth: 5,
+		min_length: 1,
+	};
+
+
+
+	// Algorithm
+
+	function generatePath (width, length)
+	{
+
+		// Table
+		var path = new Array(length);
+
+		// Start
+		path[0] = parseInt(width/2);
+
+		// Generate path
+		for(var i=0; i<length; i++)
+		{
+			if(path[i] == null)
+			{
+				// Previous
+				var previous = path[i-1];
+
+				// Trajectory
+				var models = ["right", "ahead", "left"];
+				if(previous<=0){ models = ["ahead", "left"]; }
+				if(previous>=width-1){ models = ["right", "ahead"]; }
+				var trajectory = models[Math.floor(Math.random()*(models.length))];
+				console.log(models);
+				
+				// Length
+				var trajectory_length = Math.floor(Math.random()*config.max_lenth) + config.min_length;
+				
+				// Create path
+				for(var j=0; j<trajectory_length; j++)
+				{
+					// Previous
+					var trajectory_previous = path[(i+j)-1];
+
+					// Add path
+					if(trajectory == "right"){
+						if(trajectory_previous-1 < 0){ path[i+j] = trajectory_previous; break; }
+						else{ path[i+j] = trajectory_previous-1; }
+					}
+					if(trajectory == "left"){
+						if(trajectory_previous+1 >= width){ path[i+j] = trajectory_previous; break; }
+						else{ path[i+j] = trajectory_previous+1; }
+					}
+					if(trajectory == "ahead"){ path[i+j] = trajectory_previous; }
+				}
+
+			}
+		}
+
+		// Return
+		console.log(path);
+		return path;
+
+	}
+
+
+
+
+</script>
