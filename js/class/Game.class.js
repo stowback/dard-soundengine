@@ -45,11 +45,13 @@
 				moving: false,
 				direction: null,
 				started: null,
+				position: null,
 			},
 			vilain: {
 				started: null,
 				previous: null,
 				next: null,
+				position: null,
 			}
 		};
 
@@ -60,10 +62,22 @@
 		this.time = {
 			current: null,
 			started: null,
+			offset: 0,
 		};
 
-		// Ride
-		this.ride = [];
+		// Track
+		this.track = null;
+
+		// Loop
+		this.loop = null;
+		this.pause = false;
+
+		// Callbacks
+		this.callbacks = {
+			onWin: null,
+			onLose: null,
+			onClue: null,
+		};
 
 	};
 
@@ -177,12 +191,14 @@
 
 			// Daredevil moves
 			self.move.daredevil.started = self.time.started;
+			self.move.daredevil.position = self.map.daredevil.position.x;
 
 			// Vilain moves
 			self.move.vilain.started = self.time.started;
 			self.move.vilain.previous = self.ride[0];
 			self.move.vilain.next = self.ride[1];
 			self.move.vilain.distance = self.move.vilain.next - self.move.vilain.previous;
+			self.move.vilain.position = self.map.vilain.position.x;
 
 			// Update loop
 			self.update();
@@ -202,14 +218,14 @@
 
 		// Time
 		this.time.current = new Date().getTime();
-		var elapsed = this.time.current - this.time.started;
+		var elapsed = (this.time.current - this.time.started) + this.time.offset;
 		
 		// Length
 		var distance = (elapsed/1000)*this.map.config.characters.speed;
 		this.properties.cell = parseInt(distance/this.map.config.map.points.height);
 
 		// Dardevil
-		var move_distance = 0;
+		var daredevil_x = this.map.daredevil.position.x;
 		if(this.move.daredevil.moving)
 		{
 			if(this.time.current > this.move.daredevil.started + this.map.config.characters.daredevil.moves.duration)
@@ -220,29 +236,33 @@
 			}
 			else
 			{
-				move_distance = ((this.time.current - this.move.daredevil.started)/this.map.config.characters.daredevil.moves.duration)*this.map.config.characters.daredevil.moves.distance;
+				var move_distance = ((this.time.current - this.move.daredevil.started)/this.map.config.characters.daredevil.moves.duration)*this.map.config.characters.daredevil.moves.distance;
 				if(this.move.daredevil.direction == "left"){ move_distance = -move_distance; }
+				daredevil_x = this.move.daredevil.position + move_distance;
 			}
 		}
 
 		// Vilain
-		var move_vilain = 0;
+		var vilain_x = this.map.vilain.position.x;
 		if(this.time.current > this.move.vilain.started + this.map.config.characters.kidnapper.moves.duration)
 		{
 			this.move.vilain.started = this.time.current;
 			this.move.vilain.previous = this.move.vilain.next;
 			this.move.vilain.next = this.ride[this.properties.cell];
 			this.move.vilain.distance = this.move.vilain.next - this.move.vilain.previous;
+			this.move.vilain.position = this.map.vilain.position.x;
 		}
 		else
 		{
-			move_vilain = ((this.time.current - this.move.vilain.started)/this.map.config.characters.kidnapper.moves.duration)*this.map.config.characters.kidnapper.moves.distance*this.move.vilain.distance;	
+			var move_vilain = parseInt(((this.time.current - this.move.vilain.started)/this.map.config.characters.kidnapper.moves.duration)*this.map.config.characters.kidnapper.moves.distance*this.move.vilain.distance);
+			vilain_x = this.move.vilain.position + move_vilain;
+			 
 		}
 
 		// Positions
-		this.map.daredevil.move(this.map.daredevil.position.x + move_distance, distance);
-		this.map.audio.context.listener.setPosition(this.map.daredevil.position.x + move_distance, distance, 0);
-		this.map.vilain.move(this.map.vilain.position.x + move_vilain, distance + this.kidnapperAdvance);
+		this.map.daredevil.move(daredevil_x, distance);
+		this.map.audio.context.listener.setPosition(this.map.daredevil.position.x, distance, 0);
+		this.map.vilain.move(vilain_x, distance + this.kidnapperAdvance);
 
 		// District
 		if(this.properties.district < this.map.sounds.districts.length-1)
@@ -260,14 +280,38 @@
 		}
 
 		// Loop
-		window.requestAnimationFrame(function (){ self.update(); });
+		console.log(parseInt(elapsed/1000));
+		this.loop = window.requestAnimationFrame(function (){ self.update(); });
+
+		// Track
+		var offset = Math.abs(daredevil_x - vilain_x);
+		if(offset >= this.map.config.characters.daredevil.lose.distance)
+		{
+			if(this.track == null){ this.track = this.time.current; }
+			if(this.time.current-this.track >= this.map.config.characters.daredevil.lose.duration)
+			{
+				this.giveClue();
+				window.cancelAnimationFrame(this.loop);
+			}
+		}
+		else{ this.track = null; }
+
+		// Pause
+		if(this.pause){ window.cancelAnimationFrame(this.loop); }
+
+		// Win ?
+		if(this.properties.cell >= this.map.dimensions.length)
+		{
+			window.cancelAnimationFrame(this.loop);
+			this.win(); 
+		}
 
 	};
 
 
 	// Navigation
 	
-	Game.prototype.setMoveDirection = function (move)
+	Game.prototype.setDaredevilMove = function (move)
 	{
 
 		if(!this.move.daredevil.moving)
@@ -275,7 +319,117 @@
 			this.move.daredevil.moving = true;
 			this.move.daredevil.direction = move;
 			this.move.daredevil.started = new Date().getTime();
+			this.move.daredevil.position = this.map.daredevil.position.x;
 		}
+
+	};
+
+
+	// Pause
+	
+	Game.prototype.setPause = function (state)
+	{
+
+		// Self
+		var self = this;
+
+		// State
+		this.pause = state;
+
+		// Players
+		if(state)
+		{
+			this.map.daredevil.fadeOut(1000);
+			this.map.vilain.fadeOut(1000);
+			this.map.fadeOut(2000);
+		}
+		else
+		{
+			this.map.fadeIn(1000);
+			this.map.daredevil.fadeIn(2000);
+			this.map.vilain.fadeIn(2000, function ()
+			{
+				// Time
+				self.time.offset += self.time.current - self.time.started;
+				self.time.started = new Date().getTime();
+				self.time.current = self.time.started;
+
+				// Update
+				self.update();
+			});
+		}
+
+	};
+
+
+	// Clue
+	
+	Game.prototype.giveClue = function ()
+	{
+
+		// Sounds
+		this.map.daredevil.fadeOut(1000);
+		this.map.vilain.fadeOut(1000);
+		this.map.fadeOut(2000);
+
+		// Give clue
+		if(this.properties.clues < this.map.config.characters.daredevil.lose.clues)
+		{
+			// Count
+			this.properties.clues++;
+
+			// Callback
+			if(this.callbacks.onClue){ this.callbacks.onClue(this.map.config.clues[this.properties.district]); }
+		}
+
+		// End
+		else
+		{
+			// Callback
+			if(this.callbacks.onLose){ this.callbacks.onLose(this.map.config.messages.lose); }
+		}
+
+	};
+
+	Game.prototype.resume = function ()
+	{
+
+		// Reference
+		var self = this;
+
+		// Position
+		this.map.daredevil.move(this.map.vilain.position.x, this.map.daredevil.position.y);
+		this.map.audio.context.listener.setPosition(this.map.daredevil.position.x, this.map.daredevil.position.y, 0);
+
+		// Sounds
+		this.map.fadeIn(1000);
+		this.map.vilain.fadeIn(2000);
+		this.map.daredevil.fadeIn(2000, function ()
+		{
+			// Times
+			self.time.offset += self.time.current - self.time.started;
+			self.time.started = new Date().getTime();
+			self.time.current = self.time.started;
+
+			// Update
+			self.update();
+		});
+
+	};
+
+
+	// Win
+	
+	Game.prototype.win = function ()
+	{
+
+		// Sounds
+		this.map.daredevil.fadeOut(1000);
+		this.map.vilain.fadeOut(1000);
+		this.map.fadeOut(3000);
+
+		// Callback
+		this.callbacks.onWin(this.map.config.messages.win);
 
 	};
 	

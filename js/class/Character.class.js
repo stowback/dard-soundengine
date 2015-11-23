@@ -21,12 +21,15 @@
 
 	// Object
 	
-	var Character = function (config, settings)
+	var Character = function (config, settings, dimensions)
 	{
 
 		// Config
 		this.config = config;
 		this.settings = settings;
+
+		// Dimensions
+		this.dimensions = dimensions;
 
 		// Audio
 		this.audio = {};
@@ -176,13 +179,25 @@
 	
 	Character.prototype.move = function (x, y)
 	{
+		
+		// Check
+		if(parseInt(x) >= 0 && parseInt(x) <= this.dimensions.widthDistance)
+		{
+			// Properties
+			this.position.x = x;
+			this.position.y = y;
 
-		// Properties
-		this.position.x = x;
-		this.position.y = y;
+			// Audio
+			this.audio.panner.setPosition(x, y, 1);
+		}
+		else
+		{
+			// Properties
+			this.position.y = y;
 
-		// Audio
-		this.audio.panner.setPosition(x, y, 1);
+			// Audio
+			this.audio.panner.setPosition(this.position.x, y, 1);
+		}
 
 	};
 

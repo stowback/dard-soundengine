@@ -98,6 +98,7 @@
 				// Dimensions
 				that.dimensions.total = that.dimensions.width*that.dimensions.length;
 				that.dimensions.totalIndexs = that.dimensions.total - that.dimensions.width;
+				that.dimensions.widthDistance = that.dimensions.width*that.config.map.points.width;
 
 				// Callback
 				that.createDistricts(0, success, error);
@@ -214,12 +215,12 @@
 		var that = this;
 
 		// Daredevil
-		this.daredevil = new Character(this.config.characters.daredevil, this.config.characters.settings);
+		this.daredevil = new Character(this.config.characters.daredevil, this.config.characters.settings, this.dimensions);
 		this.daredevil.init(this.config.paths.sounds + this.config.characters.daredevil.sound.file, this.audio,
 			function ()
 			{
 				// Vilain
-				that.vilain = new Character(that.config.characters.kidnapper, this.config.characters.settings);
+				that.vilain = new Character(that.config.characters.kidnapper, this.config.characters.settings, that.dimensions);
 				that.vilain.init(that.config.paths.sounds + that.config.characters.kidnapper.sound.file, that.audio,
 					function ()
 					{	

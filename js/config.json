@@ -26,7 +26,12 @@
 			},
 			"moves": {
 				"duration": 200,
-				"distance": 20
+				"distance": 13
+			},
+			"lose": {
+				"distance": 155,
+				"duration": 100,
+				"clues": 3
 			}
 		},
 		"kidnapper": {
@@ -37,18 +42,48 @@
 			},
 			"moves": {
 				"duration": 1000,
-				"distance": 20
+				"distance": 50
 			},
 			"advance": 100
 		},
 		"settings": {
 			"panner": {
 				"distanceModel": "exponential",
-				"rolloffFactor": 4,
-				"refDistance": 500
+				"rolloffFactor": 5,
+				"refDistance": 100
 			}
 		},
 		"speed": 50
+	},
+	"clues": {
+		"0": {
+			"photo": "test.jpg",
+			"name": "Bachi Bouzouk",
+			"text": "Lorem ipsum dolor est"
+		},
+		"1": {
+			"photo": "test_chinois.jpg",
+			"name": "Bachi Bouzouk chinois",
+			"text": "Lorem ipsum chinois dolor est"
+		},
+		"2": {
+			"photo": "test_pluie.jpg",
+			"name": "Bachi Bouzouk pluie",
+			"text": "Lorem ipsum pluie dolor est"
+		}
+	},
+	"messages": 
+	{
+		"lose": {
+			"photo": "defaite.jpg",
+			"name": "Dfaite Bouzouk",
+			"text": "Defaite ipsum dolor est"
+		},
+		"win": {
+			"photo": "victoire.jpg",
+			"name": "Victoire Bouzouk",
+			"text": "Victoire ipsum dolor est"
+		}	
 	},
 	"paths": {
 		"maps": "assets/maps/",

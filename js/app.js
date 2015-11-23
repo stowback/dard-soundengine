@@ -56,8 +56,8 @@
 					{
 						switch(e.keyCode)
 						{
-							case 37: game.setMoveDirection("left"); break;
-							case 39: game.setMoveDirection("right"); break;
+							case 37: game.setDaredevilMove("left"); break;
+							case 39: game.setDaredevilMove("right"); break;
 						}
 					});
 
@@ -66,6 +66,12 @@
 					{
 						game.start();
 					});
+
+
+					// Callbacks
+					game.callbacks.onWin = function (data){ console.log(data); };
+					game.callbacks.onLose = function (data){ console.log(data); };
+					game.callbacks.onClue = function (data){ console.log(data); };
 				},
 				function (error){ console.log(error); });
 
@@ -75,7 +81,17 @@
 				map.daredevil.fadeOut(0);
 				map.vilain.fadeOut(0); 
 			});
-			$('body').append(elem);
+
+			var pause = $('<button>Pause</button>');
+			pause.on('click', function (){ game.setPause(true); });
+
+			var play = $('<button>Play</button>');
+			play.on('click', function (){ game.setPause(false); });
+
+			var resume = $('<button>Resume</button>');
+			resume.on('click', function (){ game.resume(); });
+
+			$('body').append(elem).append(pause).append(play).append(resume);
 		});	
 
 	});
